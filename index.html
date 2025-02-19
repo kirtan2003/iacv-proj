@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Number Plate Recognition</title>
+</head>
+<body>
+    <h1>Vehicle Number Plate Recognition</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="image" id="imageInput">
+        <button type="submit">Upload Image</button>
+    </form>
+    <div id="output">
+        <h2>Rendered Image:</h2>
+        <img id="renderedImage" src="rendered_image.jpg" alt="Rendered Image">
+        <p id="vehicleNumber"></p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData();
+            var fileInput = document.getElementById('imageInput');
+            formData.append('image', fileInput.files[0]);
+            
+            fetch('http://127.0.0.1:5000/api/vehicle-details', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update rendered image
+                document.getElementById('renderedImage').src = 'static/' + data.rendered_image;
+                
+                // Update vehicle number
+                document.getElementById('vehicleNumber').innerText = 'Vehicle Number: ' + data.vehicle_number;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
